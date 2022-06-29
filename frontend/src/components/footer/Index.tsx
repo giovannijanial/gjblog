@@ -1,18 +1,18 @@
 import { Grid } from "@mui/material"
-import style from "./Footer.module.css"
 
 const Footer = () => {
   return (
     <Grid container
       sx={{
-        height: "150px",
+        height: "100px",
         backgroundColor: "#ccc",
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        marginTop: "10px"
       }}>
-      <h1>Footer</h1>
-      <h4>Footer footer footer footer footer footer</h4>
+      <h4>Footer</h4>
+      <p>Footer footer footer footer footer footer</p>
     </Grid>
   )
 }

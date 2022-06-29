@@ -1,9 +1,8 @@
-a {
+.navbar a {
 	text-decoration: none;
 	padding: 30px;
 	color: #ccc;
 }
-a:hover {
-	color: #2e2e2e;
-	background-color: #ccc;
+.navbar a:hover {
+	background-color: #525252;
 }
