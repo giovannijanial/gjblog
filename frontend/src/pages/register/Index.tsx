@@ -1,11 +1,9 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthentication } from '../../hooks/useAuthentication';
 
@@ -20,7 +18,7 @@ export default function RegisterPage() {
 
   const { createUser, error: authError, loading } = useAuthentication();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const user = {
@@ -37,8 +35,6 @@ export default function RegisterPage() {
 
     const res = await createUser(user);
 
-
-
     if (res) {
       setName("");
       setLastName("");
@@ -46,6 +42,7 @@ export default function RegisterPage() {
       setEmail("");
       setConfirmPassword("");
       setError("");
+
     }
   };
 
