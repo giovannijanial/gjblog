@@ -53,18 +53,47 @@ export const useAuthentication = () => {
 
       setError(translateError);
     }
-
-    //limpar memória
-    useEffect(() => {
-      return () => setCancelled(true);
-    }, [])
-
-    setLoading(false);
+    finally {
+      setLoading(false);
+    }
   }
+
+  //login
+  const login = async (data: IUser) => {
+    checkIfIsCancelled();
+    setLoading(true);
+    setError("");
+
+    try {
+
+      await signInWithEmailAndPassword(auth, data.email, data.password)
+
+    } catch (error: any) {
+      setError("Usuário ou senha inválido!")
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  //logout
+  const logout = () => {
+    checkIfIsCancelled();
+    signOut(auth);
+  }
+
+  //limpar memória
+  useEffect(() => {
+    return () => setCancelled(true);
+  }, []);
+
+
   return {
     auth,
     createUser,
     error,
-    loading
+    loading,
+    logout,
+    login
   }
 }

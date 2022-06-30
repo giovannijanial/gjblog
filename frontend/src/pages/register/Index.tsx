@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthentication } from '../../hooks/useAuthentication';
 
@@ -23,8 +23,6 @@ export default function RegisterPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setError("");
-
     const user = {
       name,
       lastName,
@@ -36,18 +34,27 @@ export default function RegisterPage() {
       setError("As senhas precisam ser iguais!")
       return
     }
-    if (authError) {
-      setError(authError);
-    }
 
     const res = await createUser(user);
-    console.log(res)
 
-    setName("");
-    setLastName("");
-    setPassword("");
-    setConfirmPassword("");
+
+
+    if (res) {
+      setName("");
+      setLastName("");
+      setPassword("");
+      setEmail("");
+      setConfirmPassword("");
+      setError("");
+    }
   };
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError)
+    }
+  }, [authError])
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -97,6 +104,8 @@ export default function RegisterPage() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                error={error.includes("usuário")}
+                helperText={error}
               />
             </Grid>
             <Grid item xs={12}>
@@ -110,7 +119,7 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                error={authError}
+                error={error.includes("senha")}
                 helperText={error}
               />
             </Grid>
@@ -129,21 +138,13 @@ export default function RegisterPage() {
                 helperText={error}
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
-            </Grid>
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          {!loading && <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Sign Up
-          </Button>
+          </Button>}
+          {loading && <Button disabled type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            Aguarde...
+          </Button>}
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link to="/login">

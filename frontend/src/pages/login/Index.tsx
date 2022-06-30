@@ -6,17 +6,36 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useAuthentication } from '../../hooks/useAuthentication';
 
 
 export default function SignIn() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const { login, error: authError, loading } = useAuthentication();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    setError("");
+
+    const user = {
+      email,
+      password,
+    }
+
+    const res = login(user);
   };
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError)
+    }
+  }, [authError])
 
   return (
     <Container component="main" maxWidth="xs">
@@ -39,6 +58,10 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!authError}
+            helperText={error}
           />
           <TextField
             margin="normal"
@@ -49,6 +72,10 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={!!authError}
+            helperText={error}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
