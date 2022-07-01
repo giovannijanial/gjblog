@@ -32,6 +32,10 @@ export default function SignIn() {
   };
 
   useEffect(() => {
+    setError("");
+  }, [email, password])
+
+  useEffect(() => {
     if (authError) {
       setError(authError)
     }
@@ -60,7 +64,7 @@ export default function SignIn() {
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            error={!!authError}
+            error={!!error}
             helperText={error}
           />
           <TextField
@@ -74,7 +78,7 @@ export default function SignIn() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            error={!!authError}
+            error={!!error}
             helperText={error}
           />
           <FormControlLabel

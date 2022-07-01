@@ -1,7 +1,11 @@
 import { Autocomplete, Box, Button, Container, Grid, Checkbox, TextField } from "@mui/material";
-import { FormEvent, useState } from "react"
+import { FormEvent, useContext, useState } from "react"
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { useInsertDocument } from "../../hooks/useInsertDocument";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { AuthContext } from "../../contexts/authContext";
+import { IPost, ITags } from "../../interfaces/Post";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -10,19 +14,31 @@ const CreatePostPage = () => {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [body, setBody] = useState("");
+  const [tags, setTags] = useState<ITags[]>([]);
   const [error, setError] = useState("");
+
+  const { user } = useContext(AuthContext);
+  const { insertDocument, response } = useInsertDocument("posts");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const post = {
+    const post: IPost = {
       title,
       image,
       body,
       tags,
+      uid: user?.uid,
+      username: user?.displayName,
     }
 
-    console.log(post);
+    console.log(post)
+    insertDocument(post);
+
+    setTitle("");
+    setImage("");
+    setBody("");
+    setTags([]);
   }
 
   return (
@@ -71,7 +87,7 @@ const CreatePostPage = () => {
                 fullWidth
                 multiple
                 id="tags"
-                options={tags}
+                options={tagsList}
                 disableCloseOnSelect
                 getOptionLabel={(tags) => tags.title}
                 renderOption={(props, tags, { selected }) => (
@@ -88,6 +104,8 @@ const CreatePostPage = () => {
                 renderInput={(params) => (
                   <TextField {...params} label="Tags" />
                 )}
+                value={tags}
+                onChange={(e, value) => setTags(value)}
                 sx={{ marginTop: "15px" }}
               />
             </Grid>
@@ -101,12 +119,12 @@ const CreatePostPage = () => {
   )
 }
 
-const tags = [
-  { title: "viagem" },
-  { title: "futebol" },
-  { title: "esporte" },
-  { title: "computador" },
-  { title: "jogos" },
-  { title: "escola" },
+const tagsList = [
+  { id: 1, title: "viagem" },
+  { id: 2, title: "futebol" },
+  { id: 3, title: "esporte" },
+  { id: 4, title: "computador" },
+  { id: 5, title: "jogos" },
+  { id: 6, title: "escola" },
 ]
 export default CreatePostPage

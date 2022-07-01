@@ -1,6 +1,7 @@
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { useEffect, useReducer, useState } from "react";
 import { db } from "../firebase/config";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { useReducer, useState } from "react";
+import { IPost } from "../interfaces/Post";
 
 interface IInsertDocument {
   error: Error | null,
@@ -17,8 +18,11 @@ const insertReducer = (state: any, action: any) => {
     case "LOADING":
       return { loading: true, error: null }
     case "LOADDED":
+      return { loading: false, error: null }
     case "ERROR":
+      return { loading: false, error: action.payload }
     default:
+      return state
   }
 
 }
@@ -28,29 +32,43 @@ export const useInsertDocument = (docCollection: any) => {
 
   //vazamento de memoria
   const [cancelled, setCancelled] = useState(false);
-
   const checkCancelBeforeDispatch = (action: any) => {
     if (!cancelled) {
       dispatch(action)
     }
   }
+  const insertDocument = async (document: IPost) => {
+    checkCancelBeforeDispatch({
+      type: "LOADING",
+    })
 
-  const insertDocument = async (document: any) => {
     try {
       const newDocument = { ...document, createdAt: Timestamp.now() }
 
-      const insertDocument = await addDoc(
+
+
+      const insertedDocument = await addDoc(
         collection(db, docCollection),
         newDocument
       )
 
       checkCancelBeforeDispatch({
-        type: "",
-        payload: insertDocument,
+        type: "LOADDED",
+        payload: insertedDocument,
       })
 
-    } catch (error) {
-
+    } catch (error: Error | any) {
+      checkCancelBeforeDispatch({
+        type: "ERROR",
+        payload: error.message
+      })
     }
   }
+
+  useEffect(() => {
+    return () => setCancelled(true)
+  }, [])
+
+
+  return { insertDocument, response }
 }
