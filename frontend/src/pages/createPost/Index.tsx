@@ -1,10 +1,10 @@
-import { Autocomplete, Box, Button, Container, Grid, Checkbox, TextField } from "@mui/material";
-import { FormEvent, useContext, useState } from "react"
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { useInsertDocument } from "../../hooks/useInsertDocument";
-import { useAuthentication } from "../../hooks/useAuthentication";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import { Autocomplete, Box, Button, Checkbox, Container, Grid, TextField } from "@mui/material";
+import { FormEvent, useContext, useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../../contexts/authContext";
+import { useInsertDocument } from "../../hooks/useInsertDocument";
 import { IPost, ITags } from "../../interfaces/Post";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -16,12 +16,23 @@ const CreatePostPage = () => {
   const [body, setBody] = useState("");
   const [tags, setTags] = useState<ITags[]>([]);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const { user } = useContext(AuthContext);
   const { insertDocument, response } = useInsertDocument("posts");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    try {
+      new URL(image);
+    } catch (err) {
+      setError("A imagem precisa ser uma URL!")
+      return
+    }
 
     const post: IPost = {
       title,
@@ -32,14 +43,19 @@ const CreatePostPage = () => {
       username: user?.displayName,
     }
 
-    console.log(post)
     insertDocument(post);
-
+    setSuccess(true);
     setTitle("");
     setImage("");
     setBody("");
     setTags([]);
+
+    navigate("/", { state: success })
   }
+
+  useEffect(() => {
+    setError("")
+  }, [title, image, body])
 
   return (
     <Container component="main" maxWidth="xs">
@@ -65,9 +81,10 @@ const CreatePostPage = () => {
               fullWidth
               id="image"
               label="Imagem"
-              autoFocus
               value={image}
               onChange={(e) => setImage(e.target.value)}
+              error={!!error && error.includes("imagem")}
+              helperText={error}
             />
           </Grid>
           <Grid item xs={12}>
@@ -84,7 +101,6 @@ const CreatePostPage = () => {
             />
             <Grid item xs={12}>
               <Autocomplete
-                fullWidth
                 multiple
                 id="tags"
                 options={tagsList}
@@ -106,6 +122,8 @@ const CreatePostPage = () => {
                 )}
                 value={tags}
                 onChange={(e, value) => setTags(value)}
+                fullWidth
+                aria-required
                 sx={{ marginTop: "15px" }}
               />
             </Grid>
