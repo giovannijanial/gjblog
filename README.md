@@ -1,6 +1,8 @@
 # GJ Blog
 > Application using React and Firebase
 
+> Under construction...
+
 ## :hammer_and_wrench: Resources
 - NodeJS
 - TypeScript
@@ -11,8 +13,8 @@
 
 ## :rocket: How start
 ```
-  npm install
-  npm run dev
+  $ npm install
+  $ npm run dev
 ```
 
 ## :globe_with_meridians: Test in web
